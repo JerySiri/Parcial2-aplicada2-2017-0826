@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blazored.Toast;
+
 
 namespace Parcial2_aplicada2_2017_0826
 {
@@ -27,6 +29,7 @@ namespace Parcial2_aplicada2_2017_0826
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddBlazoredToast();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
