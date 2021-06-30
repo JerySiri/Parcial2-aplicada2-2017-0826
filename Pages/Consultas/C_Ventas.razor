@@ -1,0 +1,170 @@
+﻿@page "/ConsultaVentas"
+
+@inject IToastService toast;
+
+@using Models;
+@using BLL;
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>Consulta de Ventas</h3>
+
+        @*Filtro*@
+
+        <div class="form-group">
+            <label>Filtro</label>
+            <div>
+                <select class="custom-select form-control col-6" @bind="Filtro">
+                    <option value="0"> Seleccione un elemento a filtrar</option>
+                    <option value="1"> Todos</option>
+                    <option value="2"> Id</option>
+                    <option value="3"> Cliente</option>
+                    <option value="4"> Monto</option>
+                    <option value="5"> Balance</option>
+                </select>
+            </div>
+        </div>
+
+        @*Consultar*@
+        <div class="form-row">
+
+            <div class="col">
+                <div class="form-group">
+
+                    <label class="form-label">Criterio</label>
+
+                    <div class="input-group">
+
+                        <input type="text" class="form-control" @bind="Criterio" />
+
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-info" @onclick="FiltrarLista">
+                                <i class="oi oi-magnifying-glass"></i>
+                                Consultar
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Cliente ID</th>
+                    <th scope="col">Monto</th>
+                    <th scope="col">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Ventas in ListaDeVentas)
+                {
+                    <tr>
+                        <td>@Ventas.VentaId</td>
+                        <td>@Ventas.Fecha</td>
+                        <td>@Ventas.ClienteId</td>
+                        <td>@Ventas.Monto</td>
+                        <td>@Ventas.Balance</td>
+                    </tr>
+
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+@code {
+    public List<Ventas> ListaDeVentas = new List<Ventas>();
+    public string Criterio { get; set; } = "";
+    public int Filtro { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public void Nuevo()
+    {
+
+        ListaDeVentas = new List<Ventas>();
+    }
+
+    public void FiltrarLista()
+    {
+        switch (Filtro)
+        {
+
+            case 1:
+                ListaDeVentas = VentasBLL.GetList(L => true);
+                break;
+
+            case 2: //id
+                int id;
+
+                if (Int32.TryParse(Criterio, out id))
+                {
+                    ListaDeVentas = VentasBLL.GetList(L => L.VentaId == id);
+                }
+                else
+                {
+                    toast.ShowError("El valor del criterio Id debe ser un numero entero");
+                }
+
+                break;
+
+            case 3: // Cliente
+                int idC;
+
+                if (Int32.TryParse(Criterio, out idC))
+                {
+                    ListaDeVentas = VentasBLL.GetList(L => L.ClienteId == idC);
+                }
+                else
+                {
+                    toast.ShowError("El valor del criterio Cliente Id debe ser un valor numerico");
+                }
+
+                break;
+
+            case 4: // Monto
+                double monto;
+
+                if (Double.TryParse(Criterio, out monto))
+                {
+                    ListaDeVentas = VentasBLL.GetList(L => L.Monto == monto);
+                }
+                else
+                {
+                    toast.ShowError("El valor del Monto debe ser un valor numerico");
+                }
+                break;
+
+            case 5: // Balance
+                double balance;
+
+                if (double.TryParse(Criterio, out balance))
+                {
+                    ListaDeVentas = VentasBLL.GetList(L => L.Balance == balance);
+                }
+                else
+                {
+                    toast.ShowError("El valor del Balance debe ser un valor numerico");
+                }
+                break;
+
+
+        }
+    }
+
+}

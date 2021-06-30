@@ -1,0 +1,125 @@
+﻿@page "/ConsultaClientes"
+
+@using Models;
+@using BLL;
+
+@inject IToastService toast;
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>Consulta de Clientes</h3>
+
+        @*Filtro*@
+
+        <div class="form-group">
+            <label>Filtro</label>
+            <div>
+                <select class="custom-select form-control col-6" @bind="Filtro">
+                    <option value="0"> Seleccione un elemento a filtrar</option>
+                    <option value="1"> Todos</option>
+                    <option value="2"> Id</option>
+                    <option value="3"> Nombre</option>
+                </select>
+            </div>
+        </div>
+
+        @*Consultar*@
+        <div class="form-row">
+
+            <div class="col">
+                <div class="form-group">
+
+                    <label class="form-label">Criterio</label>
+
+                    <div class="input-group">
+
+                        <input type="text" class="form-control" @bind="Criterio" />
+
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-info" @onclick="FiltrarLista">
+                                <i class="oi oi-magnifying-glass"></i>
+                                Consultar
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Cliente in @ListaDeClientes)
+                {
+                    <tr>
+                        <td>@Cliente.ClienteId</td>
+                        <td>@Cliente.Nombres</td>
+                    </tr>
+
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+@code {
+    public List<Clientes> ListaDeClientes = new List<Clientes>();
+    public string Criterio { get; set; } = "";
+    public int Filtro { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public void Nuevo()
+    {
+
+        ListaDeClientes = new List<Clientes>();
+    }
+
+    public void FiltrarLista()
+    {
+        switch (Filtro)
+        {
+
+            case 1:
+                ListaDeClientes = ClientesBLL.GetList(L => true);
+                break;
+
+            case 2: //id
+                int id;
+
+                if (Int32.TryParse(Criterio, out id))
+                {
+                    ListaDeClientes = ClientesBLL.GetList(L => L.ClienteId == id);
+                }
+                else
+                {
+                    toast.ShowError("El valor del Id no es valido");
+                }
+
+                break;
+
+            case 3: // descripcion
+                ListaDeClientes = ClientesBLL.GetList(L => L.Nombres.Contains(Criterio));
+                break;
+
+        }
+    }
+
+}

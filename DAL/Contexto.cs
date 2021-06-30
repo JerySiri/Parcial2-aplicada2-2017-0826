@@ -4,33 +4,18 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Parcial2_aplicada2_2017_0826.Models;
 
 namespace Parcial2_aplicada2_2017_0826.DAL
 {
     public class Contexto : DbContext
     {
-
+        public DbSet<Clientes> Clientes{ get; set; }
+        public DbSet<Ventas> Ventas{ get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(@"Data Source = Data/Parcial_2_Aplicada_2.db");
-        }
-
-        public class Clientes
-        {
-            [Key]
-            public int ClienteId { get; set; }
-            public string Nombres { get; set; }
-        }
-
-        public class Ventas
-        {
-            [Key]
-            public int VentaId { get; set; }
-            public DateTime Fecha { get; set; }
-            public int ClienteId { get; set; }
-            public double Monto { get; set; }
-            public double Balance { get; set; }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
