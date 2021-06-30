@@ -82,17 +82,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @*
-                        @foreach (var  in)
-                        {
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        }
-                            *@
+                            
+                            @foreach (CobrosDetalle CobroPorVenta  in @cobros.CobrosDetalles)
+                            {
+                                <tr>
+                                    <td>@CobroPorVenta.id</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            }
+                            
                         </tbody>
                     </table>
 
@@ -160,6 +160,11 @@
                     Eliminar
                 </button>
 
+                <button type="button" class="btn btn-lg btn-warning" @onclick="LLenarCobroDetalle">
+                    <i class="oi oi mr-2" />
+                    Actualizar
+                </button>
+
             </div>
 
         </div>
@@ -217,7 +222,7 @@
 
         }
         else
-            toast.ShowError("No pudo ser Guardado.");
+            toast.ShowError("No se puede modificar");
     }
 
     public void Eliminar()
@@ -233,6 +238,25 @@
         }
         else
             toast.ShowError("No fue posible eliminar");
+    }
+
+    private void LLenarCobroDetalle()
+    {
+        if (cobros.clienteId != 0)
+        {
+            List<Ventas> ListaVentas = VentasBLL.GetList(V => V.ClienteId == cobros.clienteId);
+
+            foreach (Ventas Venta in ListaVentas)
+            {
+                CobrosDetalle.id = 0;
+                CobrosDetalle.ventaId = Venta.VentaId;
+                cobros.CobrosDetalles.Add(CobrosDetalle);
+
+            }
+
+        }
+
+
     }
 
 }

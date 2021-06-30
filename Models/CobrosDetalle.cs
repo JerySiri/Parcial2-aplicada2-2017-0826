@@ -11,12 +11,12 @@ namespace Parcial2_aplicada2_2017_0826.Models
         [Key]
         public int id { get; set; }
 
-        public int cobroId { get; set; }
+        public int cobroId { get; set; } = 0;
 
         public int ventaId { get; set; }
 
-        public double cobrado { get; set; }
+        public double cobrado { get; set; } = 0;
 
-        public bool fuePagado { get; set; }
+        public bool fuePagado { get; set; } = false;
     }
 }
