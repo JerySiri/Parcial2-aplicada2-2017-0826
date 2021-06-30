@@ -1,8 +1,171 @@
 ﻿@page "/RegistroCobros"
 
+@using BLL;
 
-<h3>Registro De Cobros</h3>
+<EditForm Model="Cobros" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+
+        <div class="card-header justify-content-center">
+            <h3 class="text-center">Registro De Cobros</h3>
+        </div>
+
+        <div class="card-body">
+
+            @*CobroId y Boton Buscar*@
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+
+                        <label class="form-label">ID</label>
+                        <div class="input-group ">
+                            <InputNumber @bind-Value="Cobros" class="form-control col-5" />
+
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-info" @onclick="Buscar">
+                                    <i class="oi oi-magnifying-glass" />
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @*Fecha*@
+            <div class="form-group">
+
+                <label>Fecha</label>
+                <InputDate @bind-Value="fecha" class="form-control col-6" />
+
+            </div>
+
+            @*Combobox_CLientes*@
+
+            <div class="form-group">
+                <label>Clientes</label>
+                <div>
+                    <InputSelect @bind-Value="ClienteID" class="custom-select form-control col-6" required>
+                        <option value="0">Seleccione un Cliente</option>
+
+                        @foreach (var Cliente in ClientesBLL.GetCliente())
+                        {
+                            <option value="@Cliente.ClienteId">@Cliente.Nombres</option>
+
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => ClienteID)" />
+
+                </div>
+            </div>
+
+            <h4 class="text-center">Facturas Pendientes</h4>
+
+            <div class="card border-info">
+
+                <div class="card-body border-info">
+
+                    @*Cobros Detalle*@
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Monto</th>
+                                <th scope="col">Balance</th>
+                                <th scope="col">Cobrado</th>
+                                <th scope="col">Pagar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @*
+                        @foreach (var  in)
+                        {
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        }
+                            *@
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="card-footer border-info">
+
+                    <div class="row">
+
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label class="font-weight-bold">Total Pagado: </label>
+                                <InputNumber readonly @bind-Value="TotalP" class="form-control" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group offset-5">
+                                <label class="font-weight-bold">Total Cobros: </label>
+                                <InputNumber readonly @bind-Value="TotalC" class="form-control" />
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="font-weight-bold">Observacíones </label>
+
+                                <InputText @bind-Value="observaciones" class="form-control" />
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        @*Botones*@
+        <div class="card-footer">
+
+            <div class="form-group text-center" display: inline-block>
+
+                @*Boton Nuevo*@
+                <button type="button" class="btn btn-lg btn-primary" @onclick="Nuevo">
+                    <i class="oi oi-file mr-2" />
+                    Nuevo
+
+                </button>
+
+                @*Boton Guardar*@
+                <button type="submit" class="btn btn-lg btn-success">
+                    <i class="oi oi-account-login" style="transform:rotate(90deg)" />
+                    Guardar
+                </button>
+
+                @*Boton Eliminar*@
+                <button type="button" class="btn btn-lg btn-danger" @onclick="Eliminar">
+                    <i class="oi oi-trash mr-2" />
+                    Eliminar
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</EditForm>
+
+    
 
 @code {
-
+   
 }
