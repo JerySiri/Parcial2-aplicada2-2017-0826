@@ -12,6 +12,8 @@ namespace Parcial2_aplicada2_2017_0826.DAL
     {
         public DbSet<Clientes> Clientes{ get; set; }
         public DbSet<Ventas> Ventas{ get; set; }
+        public DbSet<Cobros> Cobros { get; set; }
+        public DbSet<CobrosDetalle> CobrosDetalle { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
