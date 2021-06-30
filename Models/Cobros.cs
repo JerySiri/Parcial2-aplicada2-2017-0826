@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Parcial2_aplicada2_2017_0826.Models;
 
 namespace Parcial2_aplicada2_2017_0826.Models
 {
@@ -22,5 +24,10 @@ namespace Parcial2_aplicada2_2017_0826.Models
         public int TotalPagados { get; set; } = 0;
 
         public double TotalCobros { get; set; } = 0;
+
+        public string observaciones { get; set; }
+
+        [ForeignKey("cobroId")]
+        public virtual List<CobrosDetalle> CobrosDetalles { get; set; } = new List<CobrosDetalle>();
     }
 }
