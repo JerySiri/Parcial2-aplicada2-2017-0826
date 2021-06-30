@@ -11,7 +11,7 @@ namespace Parcial2_aplicada2_2017_0826.Models
     public class Cobros
     {
         [Key]
-        public int cobroID { get; set; }
+        public int cobroId { get; set; }
 
         public DateTime fecha { get; set; } = DateTime.Now;
 

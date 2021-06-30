@@ -13,7 +13,7 @@ namespace Parcial2_aplicada2_2017_0826.BLL
     {
         public static bool Guardar(Cobros cobro)
         {
-            if (!Existe(cobro.cobroID))
+            if (!Existe(cobro.cobroId))
                 return Insertar(cobro);
             else
                 return false;
@@ -26,7 +26,7 @@ namespace Parcial2_aplicada2_2017_0826.BLL
 
             try
             {
-                fueEncontrado = contexto.Cobros.Any(e => e.cobroID == id);
+                fueEncontrado = contexto.Cobros.Any(e => e.cobroId == id);
             }
             catch (Exception)
             {
@@ -70,7 +70,7 @@ namespace Parcial2_aplicada2_2017_0826.BLL
             try
             {
                 cobro = contexto.Cobros
-                    .Where(e => e.cobroID == id)
+                    .Where(e => e.cobroId == id)
                     .Include(e => e.CobrosDetalles)
                     .FirstOrDefault();
             }
