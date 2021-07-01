@@ -49,7 +49,7 @@
             <div class="form-group">
                 <label>Clientes</label>
                 <div>
-                    <InputSelect @bind-Value="cobros.clienteId" class="custom-select form-control col-6" required @onchange="() => LLenarCobroDetalle()"
+                    <select @bind="cobros.clienteId" class="custom-select form-control col-6" required @onblur="LLenarCobroDetalle"
                     >
                         <option value="0">Seleccione un Cliente</option>
 
@@ -58,7 +58,7 @@
                             <option value="@Cliente.ClienteId">@Cliente.Nombres</option>
 
                         }
-                    </InputSelect>
+                    </select>
                     <ValidationMessage For="@(() => cobros.clienteId)" />
 
                 </div>
@@ -124,18 +124,6 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="font-weight-bold">Observacíones </label>
-
-                                <InputText @bind-Value="cobros.observaciones" class="form-control" />
-
-                            </div>
-                        </div>
-
-                    </div>
-
                 </div>
             </div>
 
@@ -163,11 +151,6 @@
                 <button type="button" class="btn btn-lg btn-danger" @onclick="Eliminar">
                     <i class="oi oi-trash mr-2" />
                     Eliminar
-                </button>
-
-                <button type="button" class="btn btn-lg btn-warning" @onclick="LLenarCobroDetalle">
-                    <i class="oi oi mr-2" />
-                    Actualizar
                 </button>
 
             </div>
@@ -252,7 +235,7 @@
 
     private void LLenarCobroDetalle()
     {
-
+        cobros.CobrosDetalles = new List<CobrosDetalle>();
 
         if (cobros.clienteId != 0)
         {
@@ -313,8 +296,9 @@
     public void EliminarCobrados( List<CobrosDetalle> ListaDetalle)
     {
         foreach (CobrosDetalle detalle in ListaDetalle) {
-
-            DescontarCobrado(detalle.ventaId, detalle, false);
+            
+            if(detalle.fuePagado == true)
+                DescontarCobrado(detalle.ventaId, detalle, !detalle.fuePagado);
         }
 
     }
