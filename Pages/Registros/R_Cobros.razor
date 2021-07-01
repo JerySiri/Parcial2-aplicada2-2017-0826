@@ -49,7 +49,8 @@
             <div class="form-group">
                 <label>Clientes</label>
                 <div>
-                    <InputSelect @bind-Value="cobros.clienteId" class="custom-select form-control col-6" required>
+                    <InputSelect @bind-Value="cobros.clienteId" class="custom-select form-control col-6" required @onchange="() => LLenarCobroDetalle()"
+                    >
                         <option value="0">Seleccione un Cliente</option>
 
                         @foreach (var Cliente in ClientesBLL.GetCliente())
@@ -87,9 +88,13 @@
                             {
                                 <tr>
                                     <td>@CobroPorVenta.id</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Fecha</td>
+                                    <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Monto</td>
+                                    <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Balance</td>
+                                    <td>@CobroPorVenta.cobrado</td>
+                                    <td>
+                                        <input type="checkbox" bind="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta, eventArgs.Value); }"/>
+                                    </td>
                                 </tr>
                             }
                             
@@ -242,6 +247,8 @@
 
     private void LLenarCobroDetalle()
     {
+
+
         if (cobros.clienteId != 0)
         {
             List<Ventas> ListaVentas = VentasBLL.GetList(V => V.ClienteId == cobros.clienteId);
@@ -251,12 +258,64 @@
                 CobrosDetalle.id = 0;
                 CobrosDetalle.ventaId = Venta.VentaId;
                 cobros.CobrosDetalles.Add(CobrosDetalle);
-
+                CobrosDetalle = new CobrosDetalle();
             }
 
         }
 
+    }
 
+    public void ActualizarPago(int idVenta, CobrosDetalle CobroDetalles, object checkedValue)
+    {
+
+        if ((bool)checkedValue)
+        {
+            DescontarBalance(idVenta,CobroDetalles);
+        }
+        else
+        {
+            DescontarCobrado(idVenta, CobroDetalles);
+        }
+
+        CalcularTotalPagado();
+        CalcularTotalCobrados();
+    }
+
+    public void DescontarBalance(int idVenta, CobrosDetalle CobroDetalles)
+    {
+        Ventas venta = VentasBLL.Buscar(idVenta);
+        CobroDetalles.cobrado = venta.Balance;
+        venta.Balance = 0;
+        VentasBLL.Modificar(venta);
+    }
+
+    public void DescontarCobrado(int idVenta, CobrosDetalle CobroDetalles)
+    {
+        Ventas venta = VentasBLL.Buscar(idVenta);
+
+        venta.Balance = CobroDetalles.cobrado;
+
+        CobroDetalles.cobrado = 0;
+
+        VentasBLL.Modificar(venta);
+    }
+
+    public void CalcularTotalPagado()
+    {
+        foreach (var detalle in cobros.CobrosDetalles)
+        {
+            if(detalle.fuePagado == true)
+                cobros.TotalPagados++;
+        }
+    }
+
+    public void CalcularTotalCobrados()
+    {
+        foreach (var detalle in cobros.CobrosDetalles)
+        {
+
+            cobros.TotalCobros += detalle.cobrado;
+        }
     }
 
 }
