@@ -93,7 +93,7 @@
                                     <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Balance</td>
                                     <td>@CobroPorVenta.cobrado</td>
                                     <td>
-                                        <input type="checkbox" bind="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta, eventArgs.Value); }"/>
+                                        <input type="checkbox" bind="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
                                     </td>
                                 </tr>
                             }
@@ -265,36 +265,41 @@
 
     }
 
-    public void ActualizarPago(int idVenta, CobrosDetalle CobroDetalles, object checkedValue)
+    public void ActualizarPago(int idVenta, CobrosDetalle CobroDetalles, bool fuePagado, object checkedValue)
     {
 
         if ((bool)checkedValue)
         {
-            DescontarBalance(idVenta,CobroDetalles);
+            DescontarBalance(idVenta,CobroDetalles, fuePagado);
         }
         else
         {
-            DescontarCobrado(idVenta, CobroDetalles);
+            DescontarCobrado(idVenta, CobroDetalles, fuePagado);
         }
 
         CalcularTotalPagado();
         CalcularTotalCobrados();
     }
 
-    public void DescontarBalance(int idVenta, CobrosDetalle CobroDetalles)
+    public void DescontarBalance(int idVenta, CobrosDetalle CobroDetalles, bool fuePagado)
     {
         Ventas venta = VentasBLL.Buscar(idVenta);
+
         CobroDetalles.cobrado = venta.Balance;
+        CobroDetalles.fuePagado = fuePagado;
+        
         venta.Balance = 0;
+        
         VentasBLL.Modificar(venta);
     }
 
-    public void DescontarCobrado(int idVenta, CobrosDetalle CobroDetalles)
+    public void DescontarCobrado(int idVenta, CobrosDetalle CobroDetalles, bool fuePagado)
     {
         Ventas venta = VentasBLL.Buscar(idVenta);
 
         venta.Balance = CobroDetalles.cobrado;
 
+        CobroDetalles.fuePagado = fuePagado;
         CobroDetalles.cobrado = 0;
 
         VentasBLL.Modificar(venta);
