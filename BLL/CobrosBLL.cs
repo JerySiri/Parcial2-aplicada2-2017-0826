@@ -119,7 +119,7 @@ namespace Parcial2_aplicada2_2017_0826.BLL
             Contexto contexto = new Contexto();
             try
             {
-                ListaCobros = contexto.Cobros.Where(criterio).ToList();
+                ListaCobros = contexto.Cobros.Where(criterio).Include(e => e.CobrosDetalles).ToList();
             }
             catch (Exception)
             {
