@@ -4,6 +4,7 @@
 @using Models;
 
 @inject IToastService toast; 
+
 <EditForm Model="cobros" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
 
@@ -93,7 +94,7 @@
                                     <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Balance</td>
                                     <td>@CobroPorVenta.cobrado</td>
                                     <td>
-                                        <input type="checkbox" bind-value="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
+                                        <input type="checkbox" checked="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
                                     </td>
                                 </tr>
                             }
@@ -239,7 +240,8 @@
 
         if (cobros.clienteId != 0)
         {
-            List<Ventas> ListaVentas = VentasBLL.GetList(V => V.ClienteId == cobros.clienteId);
+            List<Ventas> ListaVentas = VentasBLL.GetList(V => V.ClienteId == cobros.clienteId && V.Balance > 0);
+
 
             foreach (Ventas Venta in ListaVentas)
             {
@@ -255,18 +257,25 @@
 
     public void ActualizarPago(int idVenta, CobrosDetalle CobroDetalles, bool fuePagado, object checkedValue)
     {
-
-        if ((bool)checkedValue)
+        if(!CobrosBLL.Existe(cobros.cobroId))
         {
-            DescontarBalance(idVenta,CobroDetalles, true);
+            if ((bool)checkedValue)
+            {
+                DescontarBalance(idVenta, CobroDetalles, true);
+            }
+            else
+            {
+                DescontarCobrado(idVenta, CobroDetalles, false);
+            }
+
+            CalcularTotalPagado();
+            CalcularTotalCobrados();
         }
         else
         {
-            DescontarCobrado(idVenta, CobroDetalles, false);
+            toast.ShowError("No se permite cambiar los valores");
+            Buscar();
         }
-
-        CalcularTotalPagado();
-        CalcularTotalCobrados();
     }
 
     public void DescontarBalance(int idVenta, CobrosDetalle CobroDetalles, bool fuePagado)
@@ -296,7 +305,7 @@
     public void EliminarCobrados( List<CobrosDetalle> ListaDetalle)
     {
         foreach (CobrosDetalle detalle in ListaDetalle) {
-            
+
             if(detalle.fuePagado == true)
                 DescontarCobrado(detalle.ventaId, detalle, !detalle.fuePagado);
         }
