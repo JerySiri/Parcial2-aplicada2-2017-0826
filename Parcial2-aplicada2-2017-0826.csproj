@@ -27,4 +27,10 @@
     <Folder Include="Data\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\Parcial_2_Aplicada_2.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

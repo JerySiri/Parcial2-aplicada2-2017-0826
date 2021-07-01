@@ -93,7 +93,7 @@
                                     <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Balance</td>
                                     <td>@CobroPorVenta.cobrado</td>
                                     <td>
-                                        <input type="checkbox" bind-Values="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
+                                        <input type="checkbox" bind-value="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
                                     </td>
                                 </tr>
                             }
