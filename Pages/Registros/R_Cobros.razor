@@ -93,7 +93,7 @@
                                     <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Balance</td>
                                     <td>@CobroPorVenta.cobrado</td>
                                     <td>
-                                        <input type="checkbox" bind="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
+                                        <input type="checkbox" bind-Values="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
                                     </td>
                                 </tr>
                             }
@@ -234,11 +234,16 @@
     {
         bool fueElimino;
 
+
+
         fueElimino = CobrosBLL.Eliminar(cobros.cobroId);
 
         if (fueElimino)
         {
+            EliminarCobrados(cobros.CobrosDetalles);
+
             Nuevo();
+
             toast.ShowSuccess("Eliminado correctamente");
         }
         else
@@ -270,11 +275,11 @@
 
         if ((bool)checkedValue)
         {
-            DescontarBalance(idVenta,CobroDetalles, fuePagado);
+            DescontarBalance(idVenta,CobroDetalles, true);
         }
         else
         {
-            DescontarCobrado(idVenta, CobroDetalles, fuePagado);
+            DescontarCobrado(idVenta, CobroDetalles, false);
         }
 
         CalcularTotalPagado();
@@ -287,9 +292,9 @@
 
         CobroDetalles.cobrado = venta.Balance;
         CobroDetalles.fuePagado = fuePagado;
-        
+
         venta.Balance = 0;
-        
+
         VentasBLL.Modificar(venta);
     }
 
@@ -305,22 +310,37 @@
         VentasBLL.Modificar(venta);
     }
 
+    public void EliminarCobrados( List<CobrosDetalle> ListaDetalle)
+    {
+        foreach (CobrosDetalle detalle in ListaDetalle) {
+
+            DescontarCobrado(detalle.ventaId, detalle, false);
+        }
+
+    }
+
     public void CalcularTotalPagado()
     {
+        cobros.TotalPagados = 0;
+
         foreach (var detalle in cobros.CobrosDetalles)
         {
-            if(detalle.fuePagado == true)
+
+            if (detalle.fuePagado == true)
                 cobros.TotalPagados++;
         }
     }
 
     public void CalcularTotalCobrados()
     {
+        cobros.TotalCobros = 0;
         foreach (var detalle in cobros.CobrosDetalles)
         {
 
             cobros.TotalCobros += detalle.cobrado;
         }
     }
+
+
 
 }

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <None Remove="Data\Parcial_2_Aplicada_2.db-shm" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,9 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\Parcial_2_Aplicada_2.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>
