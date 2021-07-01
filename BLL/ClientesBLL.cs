@@ -29,6 +29,26 @@ namespace Parcial2_aplicada2_2017_0826.BLL
             }
             return lista;
         }
+        public static Clientes Buscar(int id)
+        {
+            Contexto contexto = new Contexto();
+            Clientes cliente;
+
+            try
+            {
+                cliente = contexto.Clientes.Find(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                contexto.Dispose();
+            }
+
+            return cliente;
+        }
 
         public static List<Clientes> GetCliente()
         {

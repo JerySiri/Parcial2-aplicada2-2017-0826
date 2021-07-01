@@ -9,7 +9,7 @@ using Parcial2_aplicada2_2017_0826.DAL;
 namespace Parcial2_aplicada2_2017_0826.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20210701061758_inicial")]
+    [Migration("20210701081635_inicial")]
     partial class inicial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,9 +61,6 @@ namespace Parcial2_aplicada2_2017_0826.Migrations
                     b.Property<int>("TotalPagados")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("VentaId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("clienteId")
                         .HasColumnType("INTEGER");
 
@@ -71,6 +68,7 @@ namespace Parcial2_aplicada2_2017_0826.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("observaciones")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("cobroId");

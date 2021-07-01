@@ -19,12 +19,11 @@ namespace Parcial2_aplicada2_2017_0826.Models
         [Range(1,int.MaxValue, ErrorMessage ="Debe seleccionar un Cliente Valido.")]
         public int clienteId { get; set; }
 
-        public int VentaId { get; set; }
-
         public int TotalPagados { get; set; } = 0;
 
         public double TotalCobros { get; set; } = 0;
 
+        [Required(ErrorMessage = "Debe escribis una observacion.")]
         public string observaciones { get; set; }
 
         [ForeignKey("cobroId")]

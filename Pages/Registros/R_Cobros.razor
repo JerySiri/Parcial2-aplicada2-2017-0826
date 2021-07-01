@@ -1,9 +1,10 @@
 ﻿@page "/RegistroCobros"
+@page "/RegistroCobros/{cobroId:int}"
 
 @using BLL;
 @using Models;
 
-@inject IToastService toast; 
+@inject IToastService toast;
 
 <EditForm Model="cobros" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
@@ -50,8 +51,7 @@
             <div class="form-group">
                 <label>Clientes</label>
                 <div>
-                    <select @bind="cobros.clienteId" class="custom-select form-control col-6" required @onblur="LLenarCobroDetalle"
-                    >
+                    <select @bind="cobros.clienteId" class="custom-select form-control col-6" required @onblur="LLenarCobroDetalle">
                         <option value="0">Seleccione un Cliente</option>
 
                         @foreach (var Cliente in ClientesBLL.GetCliente())
@@ -84,8 +84,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
-                            @foreach (CobrosDetalle CobroPorVenta  in @cobros.CobrosDetalles)
+
+                            @foreach (CobrosDetalle CobroPorVenta in @cobros.CobrosDetalles)
                             {
                                 <tr>
                                     <td>@CobroPorVenta.id</td>
@@ -94,11 +94,11 @@
                                     <td>@VentasBLL.Buscar(CobroPorVenta.ventaId).Balance</td>
                                     <td>@CobroPorVenta.cobrado</td>
                                     <td>
-                                        <input type="checkbox" checked="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }"/>
+                                        <input type="checkbox" checked="@CobroPorVenta.fuePagado" @onchange="eventArgs => { ActualizarPago(CobroPorVenta.ventaId,CobroPorVenta,CobroPorVenta.fuePagado , eventArgs.Value); }" />
                                     </td>
                                 </tr>
                             }
-                            
+
                         </tbody>
                     </table>
 
@@ -107,7 +107,7 @@
                 <div class="card-footer border-info">
 
                     <div class="row">
-
+                        @*Total Pagados*@
                         <div class="col-2">
                             <div class="form-group">
                                 <label class="font-weight-bold">Total Pagado: </label>
@@ -116,6 +116,7 @@
                             </div>
                         </div>
 
+                        @*Total Cobrados*@
                         <div class="col-4">
                             <div class="form-group offset-5">
                                 <label class="font-weight-bold">Total Cobros: </label>
@@ -124,7 +125,14 @@
                             </div>
                         </div>
                     </div>
+                    @*Obsercaciones*@
+                    <div class="form-group">
 
+                        <label>Observaciónes</label>
+                        <InputText @bind-Value=" cobros.observaciones" class="form-control" />
+                        <ValidationMessage For="@(() => cobros.observaciones)" />
+
+                    </div>
                 </div>
             </div>
 
@@ -160,7 +168,7 @@
     </div>
 </EditForm>
 
-    
+
 
 @code {
     [Parameter]
@@ -172,6 +180,7 @@
     protected override void OnInitialized()
     {
         Nuevo();
+        Buscar(cobroId);
     }
 
     public void Nuevo()
@@ -187,7 +196,25 @@
         {
             Cobros encontrado = CobrosBLL.Buscar(cobros.cobroId);
 
-            if(encontrado != null)
+            if (encontrado != null)
+            {
+                this.cobros = encontrado;
+            }
+            else
+            {
+                toast.ShowWarning("No encontrado.");
+            }
+
+        }
+    }
+
+    private void Buscar(int Id)
+    {
+        if (Id > 0)
+        {
+            Cobros encontrado = CobrosBLL.Buscar(Id);
+
+            if (encontrado != null)
             {
                 this.cobros = encontrado;
             }
@@ -217,8 +244,6 @@
     public void Eliminar()
     {
         bool fueElimino;
-
-
 
         fueElimino = CobrosBLL.Eliminar(cobros.cobroId);
 
@@ -257,7 +282,7 @@
 
     public void ActualizarPago(int idVenta, CobrosDetalle CobroDetalles, bool fuePagado, object checkedValue)
     {
-        if(!CobrosBLL.Existe(cobros.cobroId))
+        if (!CobrosBLL.Existe(cobros.cobroId))
         {
             if ((bool)checkedValue)
             {
@@ -302,11 +327,12 @@
         VentasBLL.Modificar(venta);
     }
 
-    public void EliminarCobrados( List<CobrosDetalle> ListaDetalle)
+    public void EliminarCobrados(List<CobrosDetalle> ListaDetalle)
     {
-        foreach (CobrosDetalle detalle in ListaDetalle) {
+        foreach (CobrosDetalle detalle in ListaDetalle)
+        {
 
-            if(detalle.fuePagado == true)
+            if (detalle.fuePagado == true)
                 DescontarCobrado(detalle.ventaId, detalle, !detalle.fuePagado);
         }
 

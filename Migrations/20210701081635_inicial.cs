@@ -28,10 +28,9 @@ namespace Parcial2_aplicada2_2017_0826.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     fecha = table.Column<DateTime>(type: "TEXT", nullable: false),
                     clienteId = table.Column<int>(type: "INTEGER", nullable: false),
-                    VentaId = table.Column<int>(type: "INTEGER", nullable: false),
                     TotalPagados = table.Column<int>(type: "INTEGER", nullable: false),
                     TotalCobros = table.Column<double>(type: "REAL", nullable: false),
-                    observaciones = table.Column<string>(type: "TEXT", nullable: true)
+                    observaciones = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

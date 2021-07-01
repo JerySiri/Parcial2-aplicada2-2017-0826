@@ -1,7 +1,246 @@
 ﻿@page "/ConsultaCobros"
 
-<h3>Consulta de Cobros</h3>
+@using Models;
+@using BLL;
+
+@inject IToastService toast;
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>Consulta de Cobros</h3>
+
+        <div class="row">
+            <div class="col">
+                @*Filtro*@
+
+                <div class="form-group">
+                    <label>Filtro</label>
+                    <div>
+                        <select class="custom-select form-control col-6" @bind="Filtro">
+                            <option value="0"> Seleccione un elemento a filtrar</option>
+                            <option value="1"> Todos</option>
+                            <option value="2"> Id</option>
+                            <option value="3"> Cliente</option>
+                            <option value="4"> Total Pagados</option>
+                            <option value="5"> Total Cobrados</option>
+                            <option value="6"> Observaciones</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col">
+                @*Consultar*@
+                <div class="form-row">
+
+                    <div class="col">
+                        <div class="form-group">
+
+                            <label class="form-label">Criterio</label>
+
+                            <div class="input-group">
+
+                                <input type="text" class="form-control" @bind="Criterio" />
+
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-info" @onclick="ListaConCriterios">
+                                        <i class="oi oi-magnifying-glass"></i>
+                                        Consultar
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Total Pagados</th>
+                    <th scope="col">Total Cobrados</th>
+                    <th scope="col">Observaciones</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Cobro in @ListaDeCobros)
+                {
+                    <tr>
+                        <td>@Cobro.cobroId</td>
+                        <td>@Cobro.fecha</td>
+                        <td>@ClientesBLL.Buscar(Cobro.clienteId).Nombres</td>
+                        <td>@Cobro.TotalPagados</td>
+                        <td>@Cobro.TotalCobros</td>
+                        <td>@Cobro.observaciones</td>
+                        <td>
+                            <a type="button" href="@($"/RegistroCobros/{Cobro.cobroId}")" class="btn btn-warning">
+                                <i class="oi oi-pencil"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" @onclick="() => EliminarCobro(Cobro.cobroId, Cobro.CobrosDetalles)">
+                                <i class="oi oi-trash"></i>
+                            </button>
+
+                        </td>
+                    </tr>
+
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+
+
+</div>
+
 
 @code {
 
+    public List<Cobros> ListaDeCobros = new List<Cobros>();
+    public string Criterio { get; set; } = "";
+    public float Resultado { get; set; }
+    public int Filtro { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public void Nuevo()
+    {
+
+        ListaDeCobros = new List<Cobros>();
+    }
+
+    public void ListaConCriterios()
+    {
+
+        FiltrarLista();
+
+    }
+
+    public void EliminarCobro(int id, List<CobrosDetalle> cobrosDetalle)
+    {
+
+        bool fueEliminado;
+
+        fueEliminado = CobrosBLL.Eliminar(id);
+
+        if (fueEliminado)
+        {
+            EliminarCobrados(cobrosDetalle);
+            toast.ShowSuccess("El Cobro fue eliminado exitosamente.");
+        }
+        else
+            toast.ShowError("No fue posible eliminar el Cobro.");
+
+        FiltrarLista();
+    }
+
+    public void FiltrarLista()
+    {
+        switch (Filtro)
+        {
+
+            case 1: //todos
+                ListaDeCobros = CobrosBLL.GetList(C => true);
+                break;
+
+            case 2: //id
+                int id;
+
+                if (Int32.TryParse(Criterio, out id))
+                {
+                    ListaDeCobros = CobrosBLL.GetList(C => C.cobroId == id);
+                }
+                else
+                {
+                    toast.ShowError("El valor del criterio Id no es valido");
+                }
+
+                break;
+
+            case 3: // Cliente
+                //ListaDeCobros = CobrosBLL.GetList(L => L.Descripcion.Contains(Criterio));
+
+                //ListaDeCobros = CobrosBLL.GetList(L => ClientesBLL.Buscar(L.clienteId));
+
+                break;
+
+
+            case 4: // Total Pagados
+                int TotalPagos;
+
+                if (Int32.TryParse(Criterio, out TotalPagos))
+                {
+                    ListaDeCobros = CobrosBLL.GetList(L => L.TotalPagados == TotalPagos);
+                }
+                else
+                {
+                    toast.ShowError("El valor del criterio total pagados no es valido");
+                }
+                break;
+
+            case 5: // total cobrados
+                double TotalCobrados;
+                if (double.TryParse(Criterio, out TotalCobrados))
+                {
+                    ListaDeCobros = CobrosBLL.GetList(L => L.TotalCobros == TotalCobrados);
+                }
+                else
+                {
+                    toast.ShowError("El valor del criterio Valor existencia no es valido");
+                }
+                break;
+
+            case 6: // observaciones
+
+                ListaDeCobros = CobrosBLL.GetList(L => L.observaciones.Contains(Criterio));
+
+                break;
+
+        }
+
+
+    }
+
+    public void DescontarCobrado(int idVenta, CobrosDetalle CobroDetalles, bool fuePagado)
+    {
+        Ventas venta = VentasBLL.Buscar(idVenta);
+
+        venta.Balance = CobroDetalles.cobrado;
+
+        CobroDetalles.fuePagado = fuePagado;
+        CobroDetalles.cobrado = 0;
+
+        VentasBLL.Modificar(venta);
+    }
+
+    public void EliminarCobrados(List<CobrosDetalle> ListaDetalle)
+    {
+        foreach (CobrosDetalle detalle in ListaDetalle)
+        {
+
+            if (detalle.fuePagado == true)
+                DescontarCobrado(detalle.ventaId, detalle, !detalle.fuePagado);
+        }
+
+    }
 }
