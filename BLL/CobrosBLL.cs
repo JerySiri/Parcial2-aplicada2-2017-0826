@@ -133,6 +133,39 @@ namespace Parcial2_aplicada2_2017_0826.BLL
             return ListaCobros;
         }
 
+        public static List<Cobros> ObtenerListaCobrosConCriterioANombreCliente(string Criterio)
+        {
+            List<Cobros> ListaCobros = new List<Cobros>();
+            Contexto contexto = new Contexto();
+            try
+            {
+
+                var consulta = from C in contexto.Cobros join Cl in contexto.Clientes on C.clienteId equals Cl.ClienteId where Cl.Nombres.Contains(Criterio)
+                select new Cobros {
+                    cobroId = C.cobroId,
+                    fecha = C.fecha,
+                    clienteId = C.clienteId,
+                    TotalCobros = C.TotalCobros,
+                    TotalPagados = C.TotalPagados,
+                    observaciones = C.observaciones,
+                    CobrosDetalles = C.CobrosDetalles
+
+                };
+                
+                ListaCobros = consulta.ToList();
+                
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                contexto.Dispose();
+            }
+
+            return ListaCobros;
+        }
 
     }
 }

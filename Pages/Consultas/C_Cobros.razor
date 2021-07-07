@@ -12,13 +12,14 @@
         <h3>Consulta de Cobros</h3>
 
         <div class="row">
-            <div class="col">
+
+            <div class="col-3">
                 @*Filtro*@
 
                 <div class="form-group">
                     <label>Filtro</label>
                     <div>
-                        <select class="custom-select form-control col-6" @bind="Filtro">
+                        <select class="custom-select form-control col" @bind="Filtro">
                             <option value="0"> Seleccione un elemento a filtrar</option>
                             <option value="1"> Todos</option>
                             <option value="2"> Id</option>
@@ -32,7 +33,25 @@
 
             </div>
 
-            <div class="col">
+            <div class="col-2">
+                @*DesdeFecha*@
+                <div class="form-group">
+
+                    <label>Desde Fecha</label>
+                    <input type="date" @bind="DesdeFecha" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-2">
+                @*HastaFecha*@
+                <div class="form-group">
+
+                    <label>Hasta Fecha</label>
+                    <input type="date" @bind="HastaFecha" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-5">
                 @*Consultar*@
                 <div class="form-row">
 
@@ -117,6 +136,8 @@
     public string Criterio { get; set; } = "";
     public float Resultado { get; set; }
     public int Filtro { get; set; }
+    private DateTime DesdeFecha { get; set; }
+    private DateTime HastaFecha { get; set; } = DateTime.Now;
 
     protected override void OnInitialized()
     {
@@ -161,6 +182,7 @@
 
             case 1: //todos
                 ListaDeCobros = CobrosBLL.GetList(C => true);
+                ListaDeCobros = ListaDeCobros.Where(c => c.fecha.Date >= DesdeFecha.Date && c.fecha.Date <= HastaFecha.Date).ToList();
                 break;
 
             case 2: //id
@@ -169,6 +191,7 @@
                 if (Int32.TryParse(Criterio, out id))
                 {
                     ListaDeCobros = CobrosBLL.GetList(C => C.cobroId == id);
+                    ListaDeCobros = ListaDeCobros.Where(c => c.fecha.Date >= DesdeFecha.Date && c.fecha.Date <= HastaFecha.Date).ToList();
                 }
                 else
                 {
@@ -178,10 +201,8 @@
                 break;
 
             case 3: // Cliente
-                //ListaDeCobros = CobrosBLL.GetList(L => L.Descripcion.Contains(Criterio));
-
-                //ListaDeCobros = CobrosBLL.GetList(L => ClientesBLL.Buscar(L.clienteId));
-
+                ListaDeCobros = CobrosBLL.ObtenerListaCobrosConCriterioANombreCliente(Criterio);
+                ListaDeCobros = ListaDeCobros.Where(c => c.fecha.Date >= DesdeFecha.Date && c.fecha.Date <= HastaFecha.Date).ToList();
                 break;
 
 
@@ -191,6 +212,7 @@
                 if (Int32.TryParse(Criterio, out TotalPagos))
                 {
                     ListaDeCobros = CobrosBLL.GetList(L => L.TotalPagados == TotalPagos);
+                    ListaDeCobros = ListaDeCobros.Where(c => c.fecha.Date >= DesdeFecha.Date && c.fecha.Date <= HastaFecha.Date).ToList();
                 }
                 else
                 {
@@ -203,6 +225,7 @@
                 if (double.TryParse(Criterio, out TotalCobrados))
                 {
                     ListaDeCobros = CobrosBLL.GetList(L => L.TotalCobros == TotalCobrados);
+                    ListaDeCobros = ListaDeCobros.Where(c => c.fecha.Date >= DesdeFecha.Date && c.fecha.Date <= HastaFecha.Date).ToList();
                 }
                 else
                 {
@@ -213,8 +236,12 @@
             case 6: // observaciones
 
                 ListaDeCobros = CobrosBLL.GetList(L => L.observaciones.Contains(Criterio));
-
+                ListaDeCobros = ListaDeCobros.Where(c => c.fecha.Date >= DesdeFecha.Date && c.fecha.Date <= HastaFecha.Date).ToList();
                 break;
+
+
+
+
 
         }
 
